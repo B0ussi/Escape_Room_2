@@ -1,6 +1,18 @@
 import framework
 import time
-
+print("_____________________")
+print("")
+input("Press Enter To Start")
+print("_____________________")
+time.sleep(1)
+print("3")
+time.sleep(1)
+print("2")
+time.sleep(1)
+print("1")
+time.sleep(1)
+print("GO!")
+time.sleep(2)
 silver_key = framework.Item("Silver Key",False, "A shiny silver key that fits the silver keyhole.")
 gold_key = framework.Item("Gold Key",False, "A shiny gold key that fits the gold keyhole.")
 note = framework.Item("Note", False, "A note that reads: The first, is sometimes also the best. Undead Demons Utter Unholy Desires.")
