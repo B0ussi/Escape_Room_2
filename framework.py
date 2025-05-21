@@ -1,6 +1,62 @@
 import time
+import os
+def print_lines():
+    print("_________________________________________________________________________")
+    print("                                                                         ")
+    print("You wake up after a 'great' night, laying in complete darkness.")
+
+    print("You feel around and realize your in a very small box just bigger than the length of your body.")
+
+    print("You feel something that feels like a candle to your right.")
+
+    print("You have a lighter in your pocket from the night before.")
+
+    print("you light the candle and it all becomes clear.")
+
+    print("YOU ARE IN A COFFIN!")
+
+    print("Remember this candle won't last forever...")
+
+    print("You see a number scratched into the wood of the coffin.")
+
+    print("It reads: 547")
+
+    print("those numbers are now available in your inventory.")
+    print("_________________________________________________________________________")
+    print("                                                                         ")
+
+def clear(first):
+    
+    if os.name == 'nt':
+        os.system('cls')   
+    else:
+        os.system('clear') 
+    if not first:
+        print_lines()
 inventory = []
 number_endings = ["st", "nd", "rd", "th"]
+
+class Candle:
+    def __init__(self, secs):
+        self.start_time = int(time.time())
+        self.current_checkpoint = .25
+        self.secs = secs
+    def get_time_since(self):
+        return int(time.time())-self.start_time
+    def checkpoint_test(self, game):
+        if self.get_time_since()/self.secs >= 1:
+            print("The candle ran out of light filling your coffin with the darkness waiting to rush back in.")
+            time.sleep(2)
+            print("You never made it out.")
+            game.is_playing = False
+            return True
+        elif self.get_time_since()/self.secs >= self.current_checkpoint:
+            self.current_checkpoint+=.25
+            print(f"The candle seems to be at least {(self.current_checkpoint-.25)*100}% burnt out.")
+            input("Press Enter When You Are Ready to Continue")
+    def view_candle(self):
+        time.sleep(1)
+        print(f"The candle seems to be about {round((self.get_time_since()/self.secs)*100)}% burnt out")
 
 class Item:
     def __init__(self, name, owned, description):
@@ -48,7 +104,7 @@ class Keyhole(Puzzle):
     def run(self):
         print("You see a keyhole. It takes in a specific key.")
         time.sleep(3)
-        resp = input(("Which Item Will you Like to Use?: "+", ".join([item.name for item in inventory])))
+        resp = input(("Which Item Will you Like to Use?: "+", ".join([item.name for item in inventory]))+": ")
         for item in inventory:
             if item.name == resp:
                 time.sleep(2)
@@ -129,13 +185,19 @@ class Area:
             time.sleep(2)
             print(f"{self.reward.name} is now available in your inventory.")
             inventory.append(self.reward)
+            input("Press Enter When You're Ready to Continue")
         else:
             time.sleep(2)
             print("The puzzle remains unsolved.")
     def inspect(self):
         print(f"You inspect the {self.name}.")
         time.sleep(2)
+        clear(False)
+        print("_________________________________________________________________________")
+        print("                                                                         ")
         choice = input("Would you like to do? (1) inspect inventory (2) solve puzzle (3) quit inspect: ")
+        print("_________________________________________________________________________")
+        print("                                                                         ")
         if choice == "1":
             time.sleep(1)
             print("Items in your inventory:")
@@ -148,6 +210,7 @@ class Area:
                 if item.name == item_name:
                     time.sleep(1)
                     print(f"{item.name}: {item.description}")
+                    input("Press Enter When You'd Like to Continue:")
                     break
             else:
                 time.sleep(1)
@@ -174,11 +237,23 @@ class Area:
             self.inspect()
 class Game:
     def __init__(self, areas):
+        clear(True)
         self.areas = areas
         self.is_playing = True
+        self.final_obj = "reality"
+        self.candle = Candle(300)
     def main(self):
         time.sleep(2)
+        clear(False)
+        if self.candle.checkpoint_test(self):
+            return
+        
+        print("_________________________________________________________________________")
+        print("                                                                         ")
         print("What would you like to do? (1) Inspect area (2) Use item (3) View Candle")
+        print("_________________________________________________________________________")
+        print("                                                                         ")
+        
         ans = input()
         if ans == "1":
             self.cd()
@@ -194,7 +269,8 @@ class Game:
                 if item.name == item_name:
                     time.sleep(1)
                     print(item.name + ": " + item.description)
-                if item.name.lower() == "reality":
+                    input("Press Enter When You'd Like to Continue:")
+                if item.name.lower() == self.final_obj:
                     time.sleep(7)
                     print("What.?.?")
                     time.sleep(2)
@@ -209,13 +285,15 @@ class Game:
             self.main()
         elif ans == "3":
             time.sleep(1)
-            print("You see a candle. It is lit and provides light.")
+            self.candle.view_candle()
             self.main()
         else:
             time.sleep(1)
             print("Invalid choice.")
             self.main()
     def cd(self):
+        if self.candle.checkpoint_test(self):
+            return
         areas = self.areas
         time.sleep(2)
         answer = input("There are a few visible objects around you: "+", ".join([area.name for area in areas])+"\n"+"Enter location you Would Like to Inspect: ").lower()
