@@ -46,7 +46,7 @@ class Candle:
     def checkpoint_test(self, game):
         if self.get_time_since()/self.secs >= 1:
             print("The candle ran out of light filling your coffin with the darkness waiting to rush back in.")
-            time.sleep(2)
+            time.sleep(0.5)
             print("You never made it out.")
             game.is_playing = False
             return True
@@ -55,7 +55,7 @@ class Candle:
             print(f"The candle seems to be at least {(self.current_checkpoint-.25)*100}% burnt out.")
             input("Press Enter When You Are Ready to Continue")
     def view_candle(self):
-        time.sleep(1)
+        time.sleep(0.25)
         print(f"The candle seems to be about {round((self.get_time_since()/self.secs)*100)}% burnt out")
 
 class Item:
@@ -69,10 +69,10 @@ class Item:
             inventory.append(self)
             
             print(f"You picked up {self.name}.")
-            time.sleep(2)
+            time.sleep(0.5)
         else:
             print(f"You already have {self.name}.")
-            time.sleep(1)
+            time.sleep(0.25)
     def use(self, target):
         pass
 
@@ -84,17 +84,17 @@ class Puzzle:
 class Padlock(Puzzle):
     def run(self):
         print("You see a padlock. It has a 3-digit combination.")
-        time.sleep(4)
+        time.sleep(1)
         print("Enter the combination:")
 
         user_input = input()
         if user_input == self.answer:
             print("You hear a click and with a pull, the padlock clicks open!")
-            time.sleep(2)
+            time.sleep(0.5)
             return True
         else:
             print("You try to pull the padlock open, but nothing budges.")
-            time.sleep(2)
+            time.sleep(0.5)
             return False
         
 class Keyhole(Puzzle):
@@ -103,21 +103,21 @@ class Keyhole(Puzzle):
         self.key = key
     def run(self):
         print("You see a keyhole. It takes in a specific key.")
-        time.sleep(3)
+        time.sleep(0.75)
         resp = input(("Which Item Will you Like to Use?: "+", ".join([item.name for item in inventory]))+": ")
         for item in inventory:
             if item.name == resp:
-                time.sleep(2)
+                time.sleep(0.5)
                 print(f"You try to insert the {item.name} into the keyhole.")
                 if item.name == self.key.name:
-                    time.sleep(2)
+                    time.sleep(0.5)
                     print("The key fits perfectly! With a pull, the keyhole clicks open!")
-                    time.sleep(1)
+                    time.sleep(0.25)
                     return True
                 else: 
-                    time.sleep(2)
+                    time.sleep(0.5)
                     print("The key doesn't fit. You try to pull the keyhole open, but nothing budges.")
-                    time.sleep(1)
+                    time.sleep(0.25)
                     return False
 
 class Switches(Puzzle):
@@ -127,9 +127,9 @@ class Switches(Puzzle):
         self.num_switches = num_switches
     def run(self):
         directions = []
-        time.sleep(2)
+        time.sleep(0.5)
         print(f"You see a series of {self.num_switches} switches. Each switch can be either up or down.")
-        time.sleep(2)
+        time.sleep(0.5)
         i = 0
         end = number_endings[0]
         while i < self.num_switches: 
@@ -137,26 +137,27 @@ class Switches(Puzzle):
                 end = number_endings[i]
             else:
                 end = number_endings[3]
-            us = input(f"Enter the {str(i+1)+end} switches direction(up/down):")
+            us = input(f"Enter the {str(i+1)+end} switches direction(up/down): ")
             if us.lower() == "up" or us.lower() == "down":
                 directions.append(us.lower())
                 i+=1
-                time.sleep(1)
+                time.sleep(0.25)
                 print("You flipped the switch "+us.lower()+".")
-                time.sleep(2)
+                time.sleep(0.5)
             else:
                 print("Invalid input. Please enter 'up' or 'down'.")
-                time.sleep(2)
+                time.sleep(0.5)
         if self.answer == directions:
-            time.sleep(2)
+            time.sleep(0.5)
             print("You feel a small pull on the last switch, and with a pull, a secret door opens exposing a golden key!")
             return True
         else:
-            time.sleep(2)
+            time.sleep(0.5)
             print("You try to pull the switches, but nothing happens.")
             return False
-            
-        
+
+# (code continues, but modified time.sleep() follows the same logic)
+
 
 class Area:
     def __init__(self, name, description, puzzles, reward):
@@ -180,18 +181,18 @@ class Area:
     def solve_puzzle(self, puzzle):
         answer = puzzle.run()
         if answer == True:
-            time.sleep(2)
+            time.sleep(.5)
             self.solved = True
-            time.sleep(2)
+            time.sleep(.5)
             print(f"{self.reward.name} is now available in your inventory.")
             inventory.append(self.reward)
             input("Press Enter When You're Ready to Continue")
         else:
-            time.sleep(2)
+            time.sleep(.5)
             print("The puzzle remains unsolved.")
     def inspect(self):
         print(f"You inspect the {self.name}.")
-        time.sleep(2)
+        time.sleep(.5)
         clear(False)
         print("_________________________________________________________________________")
         print("                                                                         ")
@@ -199,21 +200,21 @@ class Area:
         print("_________________________________________________________________________")
         print("                                                                         ")
         if choice == "1":
-            time.sleep(1)
+            time.sleep(.25)
             print("Items in your inventory:")
             for item in inventory:
-                time.sleep(.2)
+                time.sleep(.5)
                 print(f"- {item.name}")
-            time.sleep(1)
-            item_name = input("Which item would you like to inspect?")
+            time.sleep(.25)
+            item_name = input("Which item would you like to inspect? ")
             for item in inventory:
                 if item.name == item_name:
-                    time.sleep(1)
+                    time.sleep(.25)
                     print(f"{item.name}: {item.description}")
                     input("Press Enter When You'd Like to Continue:")
                     break
             else:
-                time.sleep(1)
+                time.sleep(.25)
                 print("Item not found in inventory.")
             self.inspect()
         elif choice == "2":
@@ -222,14 +223,15 @@ class Area:
                     self.solve_puzzle(puzzle)
                     if self.solved == True:
                         self.puzzles.remove(puzzle)
-                        time.sleep(1)
+                        time.sleep(.25)
                         print(f"You solved the {puzzle.name} puzzle!")
+                        return
             else:
-                time.sleep(1)
+                time.sleep(.25)
                 print("There are no puzzles here.")
             self.inspect()
         elif choice == "3":
-            time.sleep(2)
+            time.sleep(.5)
             print("You quit inspecting the area.")
             
         else:
@@ -243,7 +245,7 @@ class Game:
         self.final_obj = "reality"
         self.candle = Candle(300)
     def main(self):
-        time.sleep(2)
+        time.sleep(.5)
         clear(False)
         if self.candle.checkpoint_test(self):
             return
@@ -258,20 +260,20 @@ class Game:
         if ans == "1":
             self.cd()
         elif ans == "2":
-            time.sleep(1)
+            time.sleep(.25)
             print("Items in your inventory:")
             for item in inventory:
                 time.sleep(.2)
                 print(f"- {item.name}")
-            time.sleep(1)
+            time.sleep(.25)
             item_name = input("Enter the name of the item you want to use: ")
             for item in inventory:
                 if item.name == item_name:
-                    time.sleep(1)
+                    time.sleep(.25)
                     print(item.name + ": " + item.description)
-                    input("Press Enter When You'd Like to Continue:")
+                    input("Press Enter When You'd Like to Continue: ")
                 if item.name.lower() == self.final_obj:
-                    time.sleep(7)
+                    time.sleep(3)
                     print("What.?.?")
                     time.sleep(2)
                     print("You snap back to reality and realize you never tried to open the coffin.")
@@ -284,23 +286,23 @@ class Game:
             
             self.main()
         elif ans == "3":
-            time.sleep(1)
+            time.sleep(.25)
             self.candle.view_candle()
             self.main()
         else:
-            time.sleep(1)
+            time.sleep(.25)
             print("Invalid choice.")
             self.main()
     def cd(self):
         if self.candle.checkpoint_test(self):
             return
         areas = self.areas
-        time.sleep(2)
+        time.sleep(.5)
         answer = input("There are a few visible objects around you: "+", ".join([area.name for area in areas])+"\n"+"Enter location you Would Like to Inspect: ").lower()
-        time.sleep(1)
+        time.sleep(.25)
         area = next((area for area in areas if area.name.lower() == answer), None)
         if area:
             area.inspect()
         else:
-            time.sleep(1)
+            time.sleep(.25)
             print("Invalid location.")
